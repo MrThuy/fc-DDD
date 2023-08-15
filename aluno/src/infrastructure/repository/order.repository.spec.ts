@@ -125,7 +125,7 @@ describe("Order repository test", () => {
       );
 
       order.changeCustomer(customer2.id);
-      order.addItem(ordemItem2);
+      order.items = [ordemItem2];
 
       await orderRepository.update(order);
 
@@ -140,12 +140,12 @@ describe("Order repository test", () => {
         total: order.total(),
         items: [
           {
-            id: ordemItem.id,
-            name: ordemItem.name,
-            price: ordemItem.price,
-            quantity: ordemItem.quantity,
+            id: ordemItem2.id,
+            name: ordemItem2.name,
+            price: ordemItem2.price,
+            quantity: ordemItem2.quantity,
             order_id: order.id,
-            product_id: ordemItem.productId
+            product_id: ordemItem2.productId
           }
         ]
       });

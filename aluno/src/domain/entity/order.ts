@@ -43,6 +43,10 @@ export default class Order {
     return this._items;
   }
 
+  set items(items: OrderItem[]) {
+    this._items = items;
+  }
+
   total(): number {
     return this._items.reduce((total, item) => total + item.orderItemTotal(), 0);
   }

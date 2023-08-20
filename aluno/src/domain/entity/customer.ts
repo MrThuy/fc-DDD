@@ -1,3 +1,9 @@
+import EventDispatcher from "../event/@shared/event-dispatcher";
+import CustomerChangedAdressEvent from "../event/customer/customer-changedAndress.events";
+import CustomerCreatedEvent from "../event/customer/customer-created.events";
+import EnviaConsoleLogHandler from "../event/customer/handler/EnviaConsoleLog.handler";
+import EnviaConsoleLog1Handler from "../event/customer/handler/EnviaConsoleLog1.handler";
+import EnviaConsoleLog2Handler from "../event/customer/handler/EnviaConsoleLog2.handler";
 import Address from "./address";
 
 export default class Customer {
@@ -7,11 +13,36 @@ export default class Customer {
   private _address!: Address;
   private _active: boolean = false;
   private _rewardsPoints: number = 0;
+  private _eventDispatcher = new EventDispatcher();
 
   constructor(id: string, name: string) {
     this._id = id;
     this._name = name;
     this.validate();
+
+    this._eventDispatcher.register(
+      CustomerCreatedEvent.name,
+      new EnviaConsoleLog1Handler()
+    );
+
+    this._eventDispatcher.register(
+      CustomerCreatedEvent.name,
+      new EnviaConsoleLog2Handler()
+    );
+
+    this._eventDispatcher.register(
+      CustomerChangedAdressEvent.name,
+      new EnviaConsoleLogHandler()
+    );
+  }
+
+
+  getEventDispatcher() {
+    return this._eventDispatcher;
+  }
+
+  create() {
+    this._eventDispatcher.notify( new CustomerCreatedEvent(this));
   }
 
   get name() : string {
@@ -54,6 +85,7 @@ export default class Customer {
 
   changeAddress(address: Address) {
     this._address = address;
+    this._eventDispatcher.notify( new CustomerChangedAdressEvent(this));
   }
 
   isActive(): boolean {

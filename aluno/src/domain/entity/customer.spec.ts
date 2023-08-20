@@ -1,3 +1,8 @@
+import CustomerChangedAdressEvent from "../event/customer/customer-changedAndress.events";
+import CustomerCreatedEvent from "../event/customer/customer-created.events";
+import EnviaConsoleLogHandler from "../event/customer/handler/EnviaConsoleLog.handler";
+import EnviaConsoleLog1Handler from "../event/customer/handler/EnviaConsoleLog1.handler";
+import EnviaConsoleLog2Handler from "../event/customer/handler/EnviaConsoleLog2.handler";
 import Address from "./address";
 import Customer from "./customer";
 
@@ -64,6 +69,52 @@ describe("Customer unit tests", () => {
 
     customer.addRewardsPoints(10);
     expect(customer.rewardsPoints).toBe(20);
+  });
+
+  it("should notifiy customer created event", () => {
+
+    const customer = new Customer("123", "John");
+    const address = new Address("Street", 123, "12345-123", "City");
+    customer.Address = address;
+
+    const eventDispatcher = customer.getEventDispatcher();
+
+    const handler1 = eventDispatcher.getEventHandlers[CustomerCreatedEvent.name].find((eventHandler) => {
+      return eventHandler instanceof EnviaConsoleLog1Handler;
+    });
+
+    const spyEventHandler1 = jest.spyOn(handler1, "handle");
+
+    const handler2 = eventDispatcher.getEventHandlers[CustomerCreatedEvent.name].find((eventHandler) => {
+      return eventHandler instanceof EnviaConsoleLog2Handler;
+    });
+
+    const spyEventHandler2 = jest.spyOn(handler2, "handle");
+
+    customer.create();
+
+    expect(spyEventHandler1).toHaveBeenCalled();
+    expect(spyEventHandler2).toHaveBeenCalled();
+
+  });
+
+  it("should notifiy customer changed address event", () => {
+
+    const customer = new Customer("123", "John");
+    const address = new Address("Street", 123, "12345-123", "City");
+    customer.Address = address;
+
+    const eventDispatcher = customer.getEventDispatcher();
+
+    const handler = eventDispatcher.getEventHandlers[CustomerChangedAdressEvent.name].find((eventHandler) => {
+      return eventHandler instanceof EnviaConsoleLogHandler;
+    });
+
+    const spyEventHandler = jest.spyOn(handler, "handle");
+
+    customer.changeAddress(new Address("Street 2", 123, "12345-123", "City"));
+
+    expect(spyEventHandler).toHaveBeenCalled();
   });
 
 });
